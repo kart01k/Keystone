@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="theme-color" content="#f4f5f8" id="themeMeta">
+<script>try{if(localStorage.getItem("pw_theme")!=="dark")document.documentElement.setAttribute("data-theme","light");}catch(e){document.documentElement.setAttribute("data-theme","light");}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>KEYSTONE</title>
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0e1014; --card:#181b22; --text:#eceef3; --muted:#9aa1ae; --line:#2a2e38;
+    --accent:#e5383b; --accent-text:#ffffff; --danger:#ff6b6b; --author:#ff4d4f;
+    --sh-s:0 1px 3px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.4);
+    --sh-m:0 4px 12px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
+    --sh-h:0 10px 24px rgba(0,0,0,.65),0 2px 6px rgba(0,0,0,.5);
+  }
+  :root[data-theme="light"]{
+    color-scheme:light;
+    --bg:#f4f5f8; --card:#ffffff; --text:#1c2230; --muted:#6b7280; --line:#e2e5ea;
+    --accent:#d62839; --accent-text:#ffffff; --danger:#c0392b; --author:#d62839;
+    --sh-s:0 1px 3px rgba(16,24,40,.10),0 1px 2px rgba(16,24,40,.06);
+    --sh-m:0 4px 12px rgba(16,24,40,.08),0 1px 3px rgba(16,24,40,.06);
+    --sh-h:0 10px 24px rgba(16,24,40,.14),0 2px 6px rgba(16,24,40,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .wrap{max-width:720px;margin:0 auto;padding:20px 16px 100px}
+  h1{font-size:20px;margin:0}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:var(--sh-m)}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+  input[type=text],input[type=password],input[type=search],select{
+    width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;
+    background:transparent;color:var(--text);font:inherit}
+  select{background:var(--card)}
+  input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+    background:transparent;color:var(--text);padding:8px 12px}
+  button:hover{border-color:var(--accent)}
+  button.primary{box-shadow:0 2px 6px rgba(229,56,59,.4);background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:600}
+  button.danger{color:var(--danger)}
+  button.small{padding:5px 9px;font-size:13px}
+  .row{display:flex;gap:8px;align-items:center}
+  .row > .grow{flex:1}
+  .actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  #list{display:flex;flex-direction:column;gap:14px;margin-top:16px}
+  .searchbox{background:var(--card);box-shadow:var(--sh-s)}
+  .item{display:flex;flex-direction:column;gap:8px;padding:16px;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--sh-m);
+    transition:box-shadow .2s,transform .2s}
+  .item:hover{box-shadow:var(--sh-h);transform:translateY(-1px)}
+  .item .btns{margin-top:4px;padding-top:12px;border-top:1px solid var(--line)}
+  .item .pw{background:var(--bg);border-radius:8px;padding:8px 10px}
+  .item .name{font-weight:600;font-size:16px;word-break:break-word}
+  .item .meta{color:var(--muted);font-size:13px;word-break:break-word}
+  .item .pw{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;word-break:break-all}
+  .btns{display:flex;gap:6px;flex-wrap:wrap}
+  .hint{color:var(--muted);font-size:12px}
+  .empty{color:var(--muted);text-align:center;padding:24px 0}
+  .warn{border:1px solid var(--danger);color:var(--danger);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:13px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{border-radius:999px;padding:6px 14px;font-size:13px;background:var(--card);box-shadow:var(--sh-s)}
+  .chip.on{background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:600}
+  .tag{display:inline-block;font-size:11px;padding:1px 8px;border:1px solid var(--line);
+    border-radius:999px;color:var(--muted);margin-left:8px;font-weight:400;vertical-align:middle}
+  #fab{position:fixed;right:22px;bottom:22px;width:58px;height:58px;border-radius:50%;padding:0;
+    background:var(--accent);color:var(--accent-text);border:0;font-size:32px;line-height:1;
+    box-shadow:0 6px 18px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:20}
+  #fab:hover{filter:brightness(1.1)}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;
+    justify-content:center;padding:16px;z-index:30}
+  .dialog{box-shadow:0 20px 50px rgba(0,0,0,.35);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;
+    width:100%;max-width:400px;max-height:92vh;overflow:auto}
+  .dialog h2{margin:0 0 4px;font-size:17px}
+  #toast{position:fixed;left:50%;bottom:46px;transform:translateX(-50%);background:var(--text);
+    color:var(--bg);padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+  #toast.show{opacity:1}
+  .credit{position:fixed;left:0;right:0;bottom:12px;text-align:center;font-size:11px;color:var(--muted);margin:0;pointer-events:none;z-index:10}
+  .credit .author{color:var(--author);font-weight:600}
+  #themeBtn{padding:5px 8px;display:flex;align-items:center;justify-content:center}
+  #themeBtn svg{width:16px;height:16px;display:block}
+  .lockscreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
+  .lockscreen .dialog{box-shadow:var(--sh-h)}
+  .lockscreen h2{font-size:20px;margin-bottom:6px}
+  .errtxt{color:var(--danger);font-size:13px;min-height:18px;margin-top:8px}
+  body.locked #app,body.locked #fab,body.locked #modal{display:none !important}
+  .top .row{flex-wrap:nowrap;justify-content:flex-end}
+  [hidden]{display:none !important}
+
+  /* ---------- mobile fit ---------- */
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+  body{min-height:100vh;min-height:100dvh;overscroll-behavior-y:none}
+  .wrap{width:100%;padding:calc(16px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(110px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left))}
+  input[type=text],input[type=password],input[type=search],select{font-size:16px;min-height:44px}
+  button{min-height:40px;touch-action:manipulation}
+  button.small{min-height:36px;padding:6px 12px}
+  #themeBtn{min-width:40px}
+  .chips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;min-height:38px}
+  .overlay,.lockscreen{align-items:flex-start;justify-content:center;overflow-y:auto;
+    padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+  .overlay .dialog,.lockscreen .dialog{margin:auto;max-height:none}
+  #fab{right:calc(18px + env(safe-area-inset-right));bottom:calc(30px + env(safe-area-inset-bottom))}
+  .credit{bottom:calc(8px + env(safe-area-inset-bottom))}
+  #toast{bottom:calc(96px + env(safe-area-inset-bottom));max-width:90vw;text-align:center}
+  @media (max-width:520px){
+    .item .btns button{flex:1 1 calc(50% - 6px)}
+    .dialog{padding:16px}
+  }
+  @media (max-height:480px) and (orientation:landscape){
+    .wrap{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+    #fab{width:50px;height:50px;font-size:28px;bottom:calc(20px + env(safe-area-inset-bottom))}
+    #toast{bottom:calc(76px + env(safe-area-inset-bottom))}
+  }
+
+  /* ---------- burger menu ---------- */
+  .menuwrap{position:relative}
+  #menuBtn{padding:0;width:40px;min-width:40px;display:flex;align-items:center;justify-content:center}
+  #menuBtn svg{width:20px;height:20px;display:block}
+  .menu{position:absolute;right:0;top:calc(100% + 6px);min-width:210px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;box-shadow:var(--sh-h);padding:6px;z-index:25;display:flex;flex-direction:column;gap:2px}
+  .menu button{border:0;text-align:left;width:100%;min-height:44px;padding:10px 12px;border-radius:8px}
+  .menu button:hover,.menu button:active{background:var(--bg)}
+</style>
+</head>
+<body class="locked">
+
+<div id="app" class="wrap">
+  <div class="top">
+    <h1>KEYSTONE</h1>
+    <div class="row">
+      <button class="small" id="themeBtn" type="button" aria-label="Change theme" title="Change theme"></button>
+      <div class="menuwrap">
+        <button class="small" id="menuBtn" type="button" aria-label="Menu" aria-haspopup="true" aria-expanded="false" title="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div id="menu" class="menu" role="menu" hidden>
+          <button type="button" role="menuitem" id="changePw">Reset master password</button>
+          <button type="button" role="menuitem" id="exportBtn">Backup</button>
+          <button type="button" role="menuitem" id="importBtn">Restore</button>
+        </div>
+      </div>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+    </div>
+  </div>
+
+  <div id="storageWarn" class="warn" hidden>Browser storage is blocked here, so nothing you add will be saved. Open the downloaded file directly in Chrome, Edge, Firefox or Safari.</div>
+
+  <div class="chips" id="chips"></div>
+  <input type="search" id="search" class="searchbox" placeholder="Search by name or username">
+  <div id="list"></div>
+  <p class="credit">Made and developed by <span class="author">kart01k</span></p>
+</div>
+
+<button type="button" id="fab" aria-label="Add password" title="Add password">+</button>
+
+<div id="modal" class="overlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+    <h2 id="dlgTitle">Add password</h2>
+    <form id="entryForm" autocomplete="off">
+      <label for="fName">Name</label>
+      <input type="text" id="fName" required placeholder="e.g. Gmail" autocomplete="off" autocapitalize="none" spellcheck="false">
+      <label for="fCat">Category</label>
+      <select id="fCat">
+        <option>App</option>
+        <option selected>Website</option>
+        <option>Gmail</option>
+        <option>Other</option>
+      </select>
+      <label for="fUser">Username <span class="hint">(optional)</span></label>
+      <input type="text" id="fUser" autocomplete="off">
+      <label for="fPass">Password</label>
+      <div class="row">
+        <input class="grow" type="password" id="fPass" required autocomplete="new-password">
+        <button type="button" class="small" id="togglePass">Show</button>
+      </div>
+      <div class="actions">
+        <button class="primary" type="submit" id="saveBtn">Add</button>
+        <button type="button" id="cancelEdit">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="lock" class="lockscreen">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+    <h2 id="lockTitle">Unlock KEYSTONE</h2>
+    <p class="hint" id="lockSub"></p>
+    <form id="lockForm" autocomplete="off">
+      <div id="mpOldWrap" hidden>
+        <label for="mpOld">Current master password</label>
+        <input type="password" id="mpOld" autocomplete="off">
+      </div>
+      <label for="mp1" id="mp1Label">Master password</label>
+      <div class="row">
+        <input class="grow" type="password" id="mp1" autocomplete="off">
+        <button type="button" class="small" id="mpToggle">Show</button>
+      </div>
+      <div id="mp2Wrap" hidden>
+        <label for="mp2">Confirm master password</label>
+        <input type="password" id="mp2" autocomplete="off">
+      </div>
+      <div class="errtxt" id="lockErr" role="alert"></div>
+      <div class="actions">
+        <button class="primary" type="submit" id="lockBtn">Unlock</button>
+        <button type="button" id="lockCancel" hidden>Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+  var STORE_KEY = 'pw_vault_plain_v1';
+  var CATS = ['App','Website','Gmail','Other'];
+  var OLD = { Apps:'App', Websites:'Website', Gmails:'Gmail' };
+  var entries = [], editingId = null, activeCat = 'Website', shown = {}, clipTimer = null, storageOk = true;
+
+  function $(id){ return document.getElementById(id); }
+
+  function load(){
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if(raw){ var o = JSON.parse(raw); if(o && Array.isArray(o.entries)) entries = o.entries; }
+      entries.forEach(function(x){ if(OLD[x.category]) x.category = OLD[x.category]; });
+    } catch(e){ storageOk = false; }
+  }
+  function save(){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ v:2, entries:entries })); storageOk = true; }
+    catch(e){ storageOk = false; toast('Could not save: browser storage is blocked'); }
+    $('storageWarn').hidden = storageOk;
+  }
+  function toast(msg){
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  /* ---------- popup form ---------- */
+  function resetForm(){
+    editingId = null;
+    $('fName').value = ''; $('fUser').value = ''; $('fPass').value = '';
+    $('fPass').type = 'password'; $('togglePass').textContent = 'Show';
+    $('saveBtn').textContent = 'Add'; $('dlgTitle').textContent = 'Add password';
+    $('fCat').value = activeCat;
+    $('modal').hidden = true;
+  }
+  function openModal(){
+    $('modal').hidden = false;
+    setTimeout(function(){ $('fName').focus(); }, 30);
+  }
+  $('fab').addEventListener('click', function(){ resetForm(); openModal(); });
+  $('cancelEdit').addEventListener('click', resetForm);
+  $('modal').addEventListener('mousedown', function(e){ if(e.target === this) resetForm(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !$('modal').hidden) resetForm(); });
+  /* Gmail category: force lower case so a stray capital never breaks an address */
+  function lowerIfGmail(el){
+    if($('fCat').value !== 'Gmail') return;
+    var v = el.value, l = v.toLowerCase();
+    if(v === l) return;
+    var a = el.selectionStart, b = el.selectionEnd;
+    el.value = l;
+    try { el.setSelectionRange(a, b); } catch(e){}
+  }
+  $('fName').addEventListener('input', function(){ lowerIfGmail(this); });
+  $('fCat').addEventListener('change', function(){ lowerIfGmail($('fName')); });
+  $('togglePass').addEventListener('click', function(){
+    var p = $('fPass'), show = p.type === 'password';
+    p.type = show ? 'text' : 'password'; this.textContent = show ? 'Hide' : 'Show';
+  });
+
+  $('entryForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = $('fName').value.trim(), user = $('fUser').value.trim(), pass = $('fPass').value, cat = $('fCat').value;
+    if(cat === 'Gmail'){ name = name.toLowerCase(); }
+    if(!name || !pass) return;
+    var wasEdit = !!editingId;
+    if(wasEdit){
+      entries.forEach(function(x){ if(x.id === editingId){ x.name = name; x.category = cat; x.username = user; x.password = pass; } });
+    } else {
+      entries.push({ id: String(Date.now()) + Math.random().toString(36).slice(2,6), name:name, category:cat, username:user, password:pass });
+    }
+    save(); resetForm(); render(); toast(wasEdit ? 'Updated' : 'Saved');
+  });
+
+  /* ---------- list ---------- */
+  function copy(text, label){
+    if(!navigator.clipboard){ toast('Copy not supported here'); return; }
+    navigator.clipboard.writeText(text).then(function(){
+      toast(label + ' copied (clears in 30s)');
+      clearTimeout(clipTimer);
+      clipTimer = setTimeout(function(){ navigator.clipboard.writeText('').catch(function(){}); }, 30000);
+    }).catch(function(){ toast('Copy failed'); });
+  }
+  function btn(label, cls, fn){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'small' + (cls ? ' ' + cls : ''); b.textContent = label;
+    b.addEventListener('click', fn); return b;
+  }
+
+  function render(){
+    var chips = $('chips'); chips.textContent = '';
+    CATS.forEach(function(c){
+      var n = entries.filter(function(x){ return (x.category || 'Other') === c; }).length;
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip' + (c === activeCat ? ' on' : ''); b.textContent = c + ' (' + n + ')';
+      b.addEventListener('click', function(){ activeCat = c; render(); });
+      chips.appendChild(b);
+    });
+
+    var list = $('list'); list.textContent = '';
+    var q = $('search').value.trim().toLowerCase();
+    var rows = entries.filter(function(x){
+      if((x.category || 'Other') !== activeCat) return false;
+      return !q || x.name.toLowerCase().indexOf(q) > -1 || (x.username || '').toLowerCase().indexOf(q) > -1;
+    }).sort(function(a, b){ return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); });
+
+    if(!rows.length){
+      var em = document.createElement('div'); em.className = 'empty';
+      em.textContent = q ? 'No matches.' : 'Nothing in ' + activeCat + ' yet. Tap + to add one.';
+      list.appendChild(em); return;
+    }
+    rows.forEach(function(x){
+      var it = document.createElement('div'); it.className = 'item';
+      var n = document.createElement('div'); n.className = 'name'; n.textContent = x.name;
+      var tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = x.category || 'Other'; n.appendChild(tg);
+      var m = document.createElement('div'); m.className = 'meta'; m.textContent = x.username ? 'Username: ' + x.username : 'No username';
+      var p = document.createElement('div'); p.className = 'pw';
+      p.textContent = shown[x.id] ? x.password : '••••••••••';
+      var bs = document.createElement('div'); bs.className = 'btns';
+      bs.appendChild(btn('Copy password', '', function(){ copy(x.password, 'Password'); }));
+      if(x.username) bs.appendChild(btn('Copy username', '', function(){ copy(x.username, 'Username'); }));
+      bs.appendChild(btn(shown[x.id] ? 'Hide' : 'Show', '', function(){ shown[x.id] = !shown[x.id]; render(); }));
+      bs.appendChild(btn('Edit', '', function(){
+        editingId = x.id; $('fName').value = x.name; $('fCat').value = x.category || 'Other';
+        $('fUser').value = x.username || ''; $('fPass').value = x.password;
+        $('saveBtn').textContent = 'Save changes'; $('dlgTitle').textContent = 'Edit password';
+        openModal();
+      }));
+      bs.appendChild(btn('Delete', 'danger', function(){
+        if(!confirm('Delete "' + x.name + '"?')) return;
+        entries = entries.filter(function(y){ return y.id !== x.id; });
+        save(); render(); toast('Deleted');
+      }));
+      it.appendChild(n); it.appendChild(m); it.appendChild(p); it.appendChild(bs);
+      list.appendChild(it);
+    });
+  }
+  $('search').addEventListener('input', render);
+
+  /* ---------- backup / restore ---------- */
+  $('exportBtn').addEventListener('click', function(){
+    if(!entries.length){ toast('Nothing to back up yet'); return; }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify({ v:2, entries:entries }, null, 2)], { type:'application/json' }));
+    a.download = 'password-vault-backup.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    toast('Backup downloaded (not encrypted – keep it safe)');
+  });
+  $('importBtn').addEventListener('click', function(){ $('importFile').click(); });
+  $('importFile').addEventListener('change', function(){
+    var f = this.files[0]; this.value = '';
+    if(!f) return;
+    var r = new FileReader();
+    r.onload = function(){
+      try {
+        var o = JSON.parse(r.result);
+        if(!o || !Array.isArray(o.entries)) throw new Error('bad');
+        var clean = o.entries.filter(function(x){ return x && typeof x.name === 'string' && typeof x.password === 'string'; });
+        if(!confirm('Replace the current list with ' + clean.length + ' entries from this backup?')) return;
+        entries = clean.map(function(x){
+          return { id: x.id || String(Date.now()) + Math.random().toString(36).slice(2,6),
+                   name:x.name, category:OLD[x.category] || x.category || 'Other', username:x.username || '', password:x.password };
+        });
+        save(); render(); toast('Backup restored');
+      } catch(e){ toast('Not a valid backup file'); }
+    };
+    r.readAsText(f);
+  });
+
+  /* ---------- theme ---------- */
+  var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  function applyTheme(t){
+    if(t === 'light') document.documentElement.setAttribute('data-theme','light');
+    else document.documentElement.removeAttribute('data-theme');
+    $('themeMeta').setAttribute('content', t === 'light' ? '#f4f5f8' : '#0e1014');
+    $('themeBtn').innerHTML = (t === 'light') ? MOON : SUN;
+  }
+  var theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  applyTheme(theme);
+  $('themeBtn').addEventListener('click', function(){
+    theme = (theme === 'dark') ? 'light' : 'dark';
+    applyTheme(theme);
+    try { localStorage.setItem('pw_theme', theme); } catch(e){}
+  });
+
+
+  /* ---------- master password lock ---------- */
+  var MP_KEY = 'pw_master_v1', MP_ITER = 20000;
+  var K256 = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  function ror(x, n){ return (x >>> n) | (x << (32 - n)); }
+  function sha256(m){
+    var l = m.length, bl = ((l + 9 + 63) >> 6) << 6, p = new Uint8Array(bl);
+    p.set(m); p[l] = 0x80;
+    var dv = new DataView(p.buffer);
+    dv.setUint32(bl - 8, Math.floor(l / 0x20000000)); dv.setUint32(bl - 4, (l << 3) >>> 0);
+    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19], w = new Uint32Array(64), i;
+    for(var o = 0; o < bl; o += 64){
+      for(i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+      for(i = 16; i < 64; i++){
+        var s0 = ror(w[i-15],7) ^ ror(w[i-15],18) ^ (w[i-15] >>> 3), s1 = ror(w[i-2],17) ^ ror(w[i-2],19) ^ (w[i-2] >>> 10);
+        w[i] = (w[i-16] + s0 + w[i-7] + s1) >>> 0;
+      }
+      var a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+      for(i = 0; i < 64; i++){
+        var S1 = ror(e,6) ^ ror(e,11) ^ ror(e,25), ch = (e & f) ^ (~e & g), t1 = (h + S1 + ch + K256[i] + w[i]) >>> 0,
+            S0 = ror(a,2) ^ ror(a,13) ^ ror(a,22), mj = (a & b) ^ (a & c) ^ (b & c), t2 = (S0 + mj) >>> 0;
+        h=g; g=f; f=e; e=(d + t1) >>> 0; d=c; c=b; b=a; a=(t1 + t2) >>> 0;
+      }
+      H[0]=(H[0]+a)>>>0; H[1]=(H[1]+b)>>>0; H[2]=(H[2]+c)>>>0; H[3]=(H[3]+d)>>>0;
+      H[4]=(H[4]+e)>>>0; H[5]=(H[5]+f)>>>0; H[6]=(H[6]+g)>>>0; H[7]=(H[7]+h)>>>0;
+    }
+    var out = new Uint8Array(32), odv = new DataView(out.buffer);
+    for(i = 0; i < 8; i++) odv.setUint32(i * 4, H[i]);
+    return out;
+  }
+  function toBytes(str){
+    var u = unescape(encodeURIComponent(str)), r = new Uint8Array(u.length);
+    for(var i = 0; i < u.length; i++) r[i] = u.charCodeAt(i);
+    return r;
+  }
+  function hex(bytes){ var s = ''; for(var i = 0; i < bytes.length; i++) s += ('0' + bytes[i].toString(16)).slice(-2); return s; }
+  function hashPw(pw, salt){
+    var base = toBytes(salt + '|' + pw), d = sha256(base);
+    for(var i = 0; i < MP_ITER; i++){
+      var m = new Uint8Array(d.length + base.length); m.set(d); m.set(base, d.length); d = sha256(m);
+    }
+    return hex(d);
+  }
+  function newSalt(){
+    var a = new Uint8Array(16);
+    if(window.crypto && crypto.getRandomValues) crypto.getRandomValues(a);
+    else for(var i = 0; i < 16; i++) a[i] = Math.floor(Math.random() * 256);
+    return hex(a);
+  }
+  function getMaster(){
+    try { var o = JSON.parse(localStorage.getItem(MP_KEY)); if(o && o.salt && o.hash) return o; } catch(e){}
+    return null;
+  }
+  function setMaster(pw){
+    var salt = newSalt();
+    localStorage.setItem(MP_KEY, JSON.stringify({ v:1, salt:salt, hash:hashPw(pw, salt) }));
+  }
+
+  var lockMode = 'unlock', fails = 0, blockedUntil = 0, picking = false;
+  function showLock(mode){
+    $('menu').hidden = true;
+    lockMode = mode;
+    document.body.classList.add('locked');
+    resetForm();
+    shown = {}; $('search').value = '';
+    $('chips').textContent = ''; $('list').textContent = '';
+    ['mpOld','mp1','mp2'].forEach(function(id){ $(id).value = ''; $(id).type = 'password'; });
+    $('mpToggle').textContent = 'Show';
+    $('lockErr').textContent = '';
+    var setup = mode === 'setup', change = mode === 'change';
+    $('mpOldWrap').hidden = !change;
+    $('mp2Wrap').hidden = !(setup || change);
+    $('lockCancel').hidden = !change;
+    $('lockTitle').textContent = setup ? 'Create master password' : change ? 'Reset master password' : 'Unlock KEYSTONE';
+    $('lockSub').textContent = setup
+      ? 'You will need this every time you open the app. It cannot be recovered if you forget it, so keep a Backup.'
+      : change ? '' : 'Enter your master password to continue.';
+    $('mp1Label').textContent = (setup || change) ? 'New master password' : 'Master password';
+    $('lockBtn').textContent = setup ? 'Set password' : change ? 'Update' : 'Unlock';
+    $('lock').hidden = false;
+    setTimeout(function(){ (change ? $('mpOld') : $('mp1')).focus(); }, 50);
+  }
+  function unlockApp(){
+    $('lock').hidden = true;
+    document.body.classList.remove('locked');
+    ['mpOld','mp1','mp2'].forEach(function(id){ $(id).value = ''; });
+    render();
+  }
+  function lockErr(msg){ $('lockErr').textContent = msg; }
+
+  $('mpToggle').addEventListener('click', function(){
+    var show = $('mp1').type === 'password';
+    ['mp1','mp2','mpOld'].forEach(function(id){ $(id).type = show ? 'text' : 'password'; });
+    this.textContent = show ? 'Hide' : 'Show';
+  });
+
+  $('lockForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var pw = $('mp1').value;
+    if(lockMode === 'unlock'){
+      var now = Date.now();
+      if(now < blockedUntil){ lockErr('Too many attempts. Wait ' + Math.ceil((blockedUntil - now) / 1000) + 's.'); return; }
+      var m = getMaster();
+      if(!m){ showLock('setup'); return; }
+      if(hashPw(pw, m.salt) === m.hash){ fails = 0; unlockApp(); }
+      else {
+        fails++;
+        if(fails >= 5){ blockedUntil = Date.now() + 30000; fails = 0; lockErr('Too many attempts. Try again in 30s.'); }
+        else lockErr('Wrong master password.');
+        $('mp1').value = ''; $('mp1').focus();
+      }
+      return;
+    }
+    if(lockMode === 'change'){
+      var cur = getMaster();
+      if(!cur || hashPw($('mpOld').value, cur.salt) !== cur.hash){ lockErr('Current master password is wrong.'); return; }
+    }
+    if(pw.length < 4){ lockErr('Use at least 4 characters.'); return; }
+    if(pw !== $('mp2').value){ lockErr('Passwords do not match.'); return; }
+    try { setMaster(pw); }
+    catch(err){ lockErr('Could not save: browser storage is blocked.'); return; }
+    var wasChange = lockMode === 'change';
+    unlockApp();
+    toast(wasChange ? 'Master password changed' : 'Master password set');
+  });
+  $('lockCancel').addEventListener('click', unlockApp);
+  $('changePw').addEventListener('click', function(){ showLock('change'); });
+
+  /* lock again whenever the app goes to the background */
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden && !picking && getMaster() && $('lock').hidden) showLock('unlock');
+  });
+  $('importBtn').addEventListener('click', function(){ picking = true; setTimeout(function(){ picking = false; }, 60000); });
+  $('importFile').addEventListener('change', function(){ picking = false; });
+
+  /* ---------- burger menu ---------- */
+  function closeMenu(){ $('menu').hidden = true; $('menuBtn').setAttribute('aria-expanded', 'false'); }
+  $('menuBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    var open = $('menu').hidden;
+    $('menu').hidden = !open;
+    this.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  $('menu').addEventListener('click', function(e){ e.stopPropagation(); closeMenu(); });
+  document.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeMenu(); });
+
+  load();
+  $('storageWarn').hidden = storageOk;
+  resetForm();
+  showLock(getMaster() ? 'unlock' : 'setup');
+})();
+</script>
+</body>
+</html>
