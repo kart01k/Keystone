@@ -231,7 +231,7 @@ Found a vulnerability? Please open a private security advisory (Repository → *
 
 ## 📬 Contact
 
-Want to try the app, collaborate, give feedback, or have a similar app built? **DM me** on LinkedIn: **[your LinkedIn link]**
+Want to try the app, collaborate, give feedback, or have a similar app built? **DM me** on LinkedIn: **[https://www.linkedin.com/in/karthik-rathor-402734422/]**
 
 ## 📄 License
 
